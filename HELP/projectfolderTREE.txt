@@ -1,0 +1,116 @@
+
+Skills This Demonstrates
+1. React
+2. JavaScript (ES6+)
+3. REST APIs
+4. Django
+5. Python
+6. SQL
+7. Authentication
+8. CRUD operations
+9. State management
+10. Responsive UI
+11. Git/GitHub
+12. External API integration
+13. Deployment
+
+------------------------------
+React Folder Structure:-
+------------------------------
+src/
+│
+├── components/
+│   ├── Navbar.jsx
+│   ├── MovieCard.jsx
+│   ├── SearchBar.jsx
+│   ├── Rating.jsx
+│   ├── Loader.jsx
+│
+├── pages/
+│   ├── Home.jsx
+│   ├── MovieDetails.jsx
+│   ├── Favorites.jsx
+│   ├── Watchlist.jsx
+│   ├── Login.jsx
+│
+├── services/
+│   ├── api.js
+│
+├── context/
+│   ├── AuthContext.jsx
+│
+├── hooks/
+│
+├── utils/
+│
+└── App.jsx
+
+-------------------------------
+Django Folder Structure
+-------------------------------
+
+movie_project/
+│
+├── accounts/
+├── movies/
+├── recommendation/
+├── api/
+│
+├── settings.py
+└── urls.py
+
+------------------------------
+Project API routes
+------------------------------
+GET    /api/movies/
+GET    /api/movies/:id
+GET    /api/search
+GET    /api/trending
+GET    /api/recommendations
+POST   /api/login
+POST   /api/register
+POST   /api/favorites
+POST   /api/watchlist
+
+------------------------------
+Database Design
+------------------------------
+Users
+------
+id
+username
+email
+password
+
+Movies
+-------
+id
+title
+genre
+rating
+poster
+overview
+release_date
+
+Favorites
+----------
+user_id
+movie_id
+
+Watchlist
+----------
+user_id
+movie_id
+
+Reviews
+---------
+user_id
+movie_id
+rating
+review
+
+Recommendations
+---------------
+user_id
+movie_id
+score
