@@ -104,10 +104,12 @@ export default function MovieDetailModal({ movie, onClose, watchlist, onToggleWa
                 <strong>Director:</strong>
                 <p>{movie.director}</p>
               </div>
-              <div>
-                <strong>Cast:</strong>
-                <p>{movie.cast.join(', ')}</p>
-              </div>
+              {movie.cast && (
+                <div>
+                  <strong>Cast:</strong>
+                  <p>{movie.cast.join(', ')}</p>
+                </div>
+              )}
               <div>
                 <strong>Intensity Vibe:</strong>
                 <div className="intensity-bar">

@@ -9,7 +9,7 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const [watchlist, setWatchlist] = useState(() => {
     const saved = localStorage.getItem('rajcinema_watchlist');
     return saved ? JSON.parse(saved) : [];
@@ -66,7 +66,7 @@ export default function App() {
   return (
     <div className="app-wrapper">
       {/* Header / Navbar */}
-      <Navbar 
+      <Navbar
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         activeTab={activeTab}
@@ -96,13 +96,13 @@ export default function App() {
         ) : (
           <>
             {!searchQuery && activeTab === 'all' && (
-              <Hero 
+              <Hero
                 featuredMovie={featuredMovie}
                 onWatchTrailer={handleWatchTrailer}
               />
             )}
-            
-            <MovieGrid 
+
+            <MovieGrid
               movies={movies}
               onSelectMovie={setSelectedMovie}
               watchlist={watchlist}
@@ -118,7 +118,7 @@ export default function App() {
 
       {/* Movie Details Modal Overlay */}
       {selectedMovie && (
-        <MovieDetailModal 
+        <MovieDetailModal
           movie={selectedMovie}
           onClose={() => setSelectedMovie(null)}
           watchlist={watchlist}
@@ -141,14 +141,6 @@ export default function App() {
               <ul>
                 <li><a href="#root" onClick={() => { setActiveTab('all'); setSearchQuery(''); }}>Catalog Feed</a></li>
                 <li><a href="#root" onClick={() => setActiveTab('watchlist')}>My Watchlist</a></li>
-              </ul>
-            </div>
-            <div className="footer-link-group">
-              <h4>Stack Info</h4>
-              <ul>
-                <li><a href="https://react.dev/" target="_blank" rel="noopener noreferrer">React Framework</a></li>
-                <li><a href="https://vite.dev/" target="_blank" rel="noopener noreferrer">Vite Bundler</a></li>
-                <li><a href="https://docs.djangoproject.com/" target="_blank" rel="noopener noreferrer">Django Backend</a></li>
               </ul>
             </div>
           </div>

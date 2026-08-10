@@ -36,7 +36,7 @@ export default function MovieGrid({
       m.title.toLowerCase().includes(query) || 
       m.director.toLowerCase().includes(query) ||
       m.genres.some(g => g.toLowerCase().includes(query)) ||
-      m.cast.some(c => c.toLowerCase().includes(query))
+      (m.cast && m.cast.some(c => c.toLowerCase().includes(query)))
     );
   }
 
