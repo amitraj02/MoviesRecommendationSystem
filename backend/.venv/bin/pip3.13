@@ -1,4 +1,4 @@
-#!/Users/amitraj/git_repo_project/MoviesRecommendation/backend/.venv/bin/python3.13
+#!/Users/amitraj/git_repo_project/MovieRecommendationSystem/backend/.venv/bin/python3.13
 import sys
 from pip._internal.cli.main import main
 if __name__ == '__main__':

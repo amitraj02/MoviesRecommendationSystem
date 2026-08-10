@@ -1,122 +1,154 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import MovieGrid from './components/MovieGrid';
+import MovieDetailModal from './components/MovieDetailModal';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [movies, setMovies] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [watchlist, setWatchlist] = useState(() => {
+    const saved = localStorage.getItem('rajcinema_watchlist');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'trending', 'watchlist'
+  const [selectedMovie, setSelectedMovie] = useState(null);
+
+  // Sync watchlist to localStorage
+  useEffect(() => {
+    localStorage.setItem('rajcinema_watchlist', JSON.stringify(watchlist));
+  }, [watchlist]);
+
+  // Fetch movies from Django REST API endpoint
+  useEffect(() => {
+    setIsLoading(true);
+    fetch('http://127.0.0.1:8000/api/movies/')
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to retrieve movies database');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setMovies(data);
+        setError(null);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message);
+        setIsLoading(false);
+      });
+  }, []);
+
+  const handleToggleWatchlist = (movie) => {
+    if (watchlist.includes(movie.id)) {
+      setWatchlist(watchlist.filter((id) => id !== movie.id));
+    } else {
+      setWatchlist([...watchlist, movie.id]);
+    }
+  };
+
+  const handleWatchTrailer = (movie) => {
+    setSelectedMovie(movie);
+  };
+
+  // Derive unique genres list dynamically from fetched database movies
+  const genresList = [...new Set(movies.flatMap(m => m.genres || []))].sort();
+
+  // Select movie with ID 9 (12th Fail) or fallback to first element for Hero spotlight
+  const featuredMovie = movies.find(m => m.id === 9) || movies[0];
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app-wrapper">
+      {/* Header / Navbar */}
+      <Navbar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        watchlistCount={watchlist.length}
+      />
 
-      <div className="ticks"></div>
+      {/* Main Content Area */}
+      <main className="main-content">
+        {isLoading ? (
+          <div className="container animate-fade-in" style={{ textAlign: 'center', padding: '5rem 0' }}>
+            <div className="video-spinner" style={{ margin: '0 auto 1.5rem' }}></div>
+            <h3>Loading RAJcinema Catalog...</h3>
+            <p style={{ color: 'var(--text-muted)' }}>Retrieving movie records from SQLite database...</p>
+          </div>
+        ) : error ? (
+          <div className="container animate-fade-in" style={{ textAlign: 'center', padding: '5rem 1rem' }}>
+            <div className="badge badge-secondary" style={{ marginBottom: '1.5rem' }}>Connection Offline</div>
+            <h3 style={{ color: 'var(--accent-secondary)' }}>Unable to connect to local Django server</h3>
+            <p style={{ color: 'var(--text-muted)', maxWidth: '500px', margin: '0.5rem auto 1.5rem' }}>
+              Ensure your Django backend server is running at <code>http://127.0.0.1:8000</code> and try refreshing the page.
+            </p>
+            <button className="btn btn-secondary" onClick={() => window.location.reload()}>
+              Retry Connection
+            </button>
+          </div>
+        ) : (
+          <>
+            {!searchQuery && activeTab === 'all' && (
+              <Hero
+                featuredMovie={featuredMovie}
+                onWatchTrailer={handleWatchTrailer}
+              />
+            )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+            <MovieGrid
+              movies={movies}
+              onSelectMovie={setSelectedMovie}
+              watchlist={watchlist}
+              onToggleWatchlist={handleToggleWatchlist}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              searchQuery={searchQuery}
+              genresList={genresList}
+            />
+          </>
+        )}
+      </main>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* Movie Details Modal Overlay */}
+      {selectedMovie && (
+        <MovieDetailModal
+          movie={selectedMovie}
+          onClose={() => setSelectedMovie(null)}
+          watchlist={watchlist}
+          onToggleWatchlist={handleToggleWatchlist}
+          allMovies={movies}
+          onSelectMovie={setSelectedMovie}
+        />
+      )}
+
+      {/* Footer */}
+      <footer className="footer-container">
+        <div className="footer-content container">
+          <div className="footer-brand">
+            <span className="logo-text">RAJ<span>cinema</span></span>
+            <p>Your personalized movie assistant. Discover perfect films tailored to your precise genres, ratings, and release eras.</p>
+          </div>
+          <div className="footer-links">
+            <div className="footer-link-group">
+              <h4>System Links</h4>
+              <ul>
+                <li><a href="#root" onClick={() => { setActiveTab('all'); setSearchQuery(''); }}>Catalog Feed</a></li>
+                <li><a href="#root" onClick={() => setActiveTab('watchlist')}>My Watchlist</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; {new Date().getFullYear()} RAJcinema. ITs my first movies recomendation project. </p>
+        </div>
+      </footer>
+    </div>
+  );
 }
-
-export default App
